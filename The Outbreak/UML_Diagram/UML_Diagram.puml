@@ -1,0 +1,403 @@
+@startuml
+class Entities.AmmoCrate {
++ {static} int nrAmmoCrates
++ {static} long timeOfLastSpawn
+- BufferedImage ammo_crate_image
++ void tick()
++ void render(Graphics)
++ Rectangle getBounds()
+}
+class Entities.Animation {
+- int speed
+- int frames
+- int index
+- int count
+- int loopCount
+- BufferedImage[] img
+- BufferedImage currentImg
++ void runAnimation()
++ void nextFrame()
++ void drawAnimation(Graphics,double,double,int)
++ void setFrame(int)
++ void setLoopCount(int)
++ int getLoopCount()
+}
+class Entities.Vaccine {
++ {static} int nrVaccines
+- BufferedImage vaccine_image
++ void tick()
++ void render(Graphics)
++ Rectangle getBounds()
+}
+class Sound.Sound {
++ Clip music
+~ List<Clip> soundEffects
+~ Clip clip
+~ URL[] soundURL
++ void setFile(int)
++ void playSoundEffect(int)
++ void playMusic(int)
++ void stopMusic()
++ void removeInactiveSE()
+}
+class other.ObjectSpawner {
+~ Game game
+~ Handler handler
+~ Camera camera
+~ SpriteSheet ss
++ void spawnZombie(double,int)
++ void spawnAmmoCrate(int,int)
++ void spawnHealthCrate(int,int)
+}
+abstract class Entities.Zombies.Zombie {
+~ Handler handler
+~ Game game
+~ Animation moving_anim
+# int hp
+# int speed
+# int dmg
+# int attackSpeed
+# int hitBoxSize
++ {static} int nrZombies
++ {static} long timeOfLastSpawn
+- long timeOfLastAttack
+# Boolean isAttacking
+# Soldier soldier
++ void Init()
++ void tick()
++ void death()
++ void vaccineDrop()
++ void render(Graphics)
++ void collision()
++ void chaseSoldier()
++ Rectangle getBounds()
+}
+class other.Camera {
+- float x
+~ Game game
++ void tick(GameObject)
++ float getX()
++ void setX(float)
++ float getY()
++ void setY(float)
+}
+class Entities.Gun {
+- int capacity
++ int ammo
+- int damage
+- int firingSpeed
++ void reload()
++ void addAmmo(int)
++ int getCapacity()
++ int getDamage()
++ int getFiringSpeed()
++ int getAmmo()
+}
+abstract class Entities.GameObject {
+# int x
+# float velX
+# ID id
+# SpriteSheet ss
++ {abstract}void tick()
++ {abstract}void render(Graphics)
++ {abstract}Rectangle getBounds()
++ ID getId()
++ void setId(ID)
++ int getX()
++ void setX(int)
++ int getY()
++ void setY(int)
++ float getVelX()
++ void setVelX(float)
++ float getVelY()
++ void setVelY(float)
+}
+class Entities.Projectiles.Bullet {
++ void tick()
++ void render(Graphics)
++ Rectangle getBounds()
+}
+class Entities.HealthCrate {
++ {static} int nrHealthCrates
++ {static} long timeOfLastSpawn
+- BufferedImage health_crate_image
++ void tick()
++ void render(Graphics)
++ Rectangle getBounds()
+}
+class Menu.MenuManager {
+- Game game
+- Soldier soldier
+- int width
+- BufferedImage menu_image
+- MenuState state
+- int select
++ void render(Graphics)
++ void input(int)
++ void setState(MenuState)
++ MenuState getState()
+- void renderMainMenu(Graphics)
+- void renderPauseMenu(Graphics)
+- void renderAboutPage(Graphics)
+- void renderLevelFinished(Graphics)
+- void renderGameFinished(Graphics)
+- void renderSettingsMenu(Graphics)
+- void mainMenuInput(int)
+- void pauseMenuInput(int)
+- void aboutPageInput(int)
+- void levelFinishedInput(int)
+- void gameFinishedInput(int)
+- void settingsMenuInput(int)
+- void menuNavigation(int,int)
+- void renderLevelPassed(Graphics)
+- void renderLevelLost(Graphics)
+}
+class other.SaveManager {
+~ Game game
+~ Handler handler
+~ Soldier soldier
++ void save()
++ void load()
+}
+class Entities.Soldier {
+- {static} Soldier instance
+- Handler handler
+- Game game
+- Camera camera
+- int spriteSize
+- {static} BufferedImage[] pistol_shooting
+- {static} BufferedImage[] pistol_reloading
+- {static} BufferedImage[] rifle_shooting
+- {static} BufferedImage[] rifle_reloading
+- Animation pistol_shooting_anim
+- Animation rifle_shooting_anim
+- Animation shooting_anim
++ boolean isShooting
+- long timeOfLastShot
++ boolean dirUp
++ int hp
++ int kills
++ int speed
++ int vaccinesCollected
++ int nrDeaths
++ int gunIndex
++ Gun pistol
++ boolean rifleUnlocked
+- int mx
+- double rotation
+- int hitBoxSize
++ {static} Soldier getInstance(ID,Handler,Game,SpriteSheet,Camera)
++ void tick()
++ void render(Graphics)
++ void collision()
++ void resetStats()
++ void changeGun(int)
++ void createAnimations()
++ {static} void loadImages(SpriteSheet,int)
++ Rectangle getBounds()
+}
+enum Menu.MenuState {
++  mainMenu
++  pauseMenu
++  aboutPage
++  levelFinished
++  gameFinished
++  settingsMenu
+}
+class Main.Game {
+- boolean isRunning
++ boolean won
+- Thread thread
+- Handler handler
+- Camera camera
+- SpriteSheet ss
+- Sound sound
++ int width
++ int height
++ boolean soundOn
++ int spriteSize
++ BufferedImage map
+- int fps
++ CountDownTimer countDownTimer
+- ObjectSpawner objectSpawner
++ LevelLoader levelLoader
++ int levelIndex
+- HUD hud
++ Soldier soldier
++ MenuManager menuManager
++ boolean inMenu
+- SaveManager saveManager
++ int difficulty
++ {static} void main(String[])
+- void start()
+- void stop()
++ void run()
++ void tick()
++ void render()
++ void saveGame()
++ void loadGame()
++ void playMusic(int)
++ void stopMusic()
++ void muteMusic()
++ void unmuteMusic()
++ void playSoundEffect(int)
++ void renderGame(Graphics)
++ void renderLoadingScreen(Graphics)
+}
+class Graphics.HUD {
+- {static} HUD instance
+- Game game
+- SpriteSheet ss
+- Soldier soldier
+- BufferedImage health_icon
+- int spriteSize
++ {static} HUD getInstance(Game,SpriteSheet,Soldier)
++ void render(Graphics)
++ void loadImagesHUD()
+}
+class other.CountDownTimer {
++ Timer timer
++ String timerString
++ int minute
++ DecimalFormat dFormat
+~ Soldier soldier
++ void start()
++ void stop()
++ void set(int,int)
++ String getTimerString()
++ int getMinute()
++ void setMinute(int)
++ int getSecond()
++ void setSecond(int)
+}
+class Entities.Handler {
++ LinkedList<GameObject> object
+~ Soldier soldier
++ void tick()
++ void render(Graphics)
++ void addObject(GameObject)
++ void removeObject(GameObject)
++ void reset()
++ void addSoldier(Soldier)
++ Soldier getSoldier()
+}
+abstract class Entities.Projectiles.Projectile {
+- Handler handler
+~ Game game
+# int speed
++ void calculateVel(int,int)
++ void tick()
++ {abstract}void render(Graphics)
++ Boolean outOfBounds()
++ Rectangle getBounds()
+}
+class other.LevelLoader {
+~ Game game
+~ SpriteSheet ss
+~ Handler handler
+~ BufferedImageLoader loader
+~ Soldier soldier
++ {static} int nrLevels
++ void load(int)
+- void level_1()
+- void level_2()
+- void level_3()
+- void level_4()
+- void boss_fight()
+}
+class Entities.Zombies.NormalZombie {
+- {static} BufferedImage[] moving_images
+- {static} BufferedImage[] attack_images
+- {static} int size
++ void setStats()
++ void tick()
++ void render(Graphics)
++ {static} void loadImages(SpriteSheet,int)
+}
+class Graphics.BufferedImageLoader {
+- BufferedImage image
++ BufferedImage loadImage(String)
+}
+enum Entities.ID {
++  Player
++  AmmoCrate
++  HealthCrate
++  Vaccine
++  Bullet
++  FireBall
++  Enemy
+}
+class Entities.Zombies.BabyZombie {
+- {static} BufferedImage[] moving_images
+- {static} BufferedImage[] attack_images
+- {static} int size
++ void setStats()
++ void tick()
++ void render(Graphics)
++ void vaccineDrop()
++ {static} void loadImages(SpriteSheet,int)
+}
+class Entities.Zombies.Boss {
+- {static} BufferedImage[] moving_images
+- {static} BufferedImage[] attack_images
+- {static} int size
+- int offset
+- boolean fireMode
+- long babyZombieLastSpawn
+- long timeOfLastCharge
++ void setStats()
++ void tick()
++ void render(Graphics)
++ void shootFireBalls()
++ void death()
++ {static} void loadImages(SpriteSheet,int)
++ Rectangle getBounds()
+}
+class Main.Window {
+}
+class Graphics.SpriteSheet {
+- BufferedImage image
+- int size
++ BufferedImage grabImage(int,int,int,int)
++ {static} BufferedImage resize(BufferedImage,int,int)
+}
+class Exceptions.InvalidAudioException {
+}
+class Inputs.MouseInput {
+- Game game
+- Soldier soldier
++ void mousePressed(MouseEvent)
++ void mouseReleased(MouseEvent)
+}
+class Inputs.KeyInput {
+~ Game game
+~ Soldier soldier
++ void keyPressed(KeyEvent)
++ void keyReleased(KeyEvent)
++ void gameRunningInput(int)
+}
+class Entities.Projectiles.FireBall {
+- BufferedImage image
+- int size
++ void render(Graphics)
++ Rectangle getBounds()
+}
+
+
+Entities.GameObject <|-- Entities.AmmoCrate
+Entities.GameObject <|-- Entities.Vaccine
+Entities.Zombies.GameObject <|-- Entities.Zombies.Zombie
+Entities.Projectiles.Projectile <|-- Entities.Projectiles.Bullet
+Entities.GameObject <|-- Entities.HealthCrate
+Entities.GameObject <|-- Entities.Soldier
+Main.Runnable <|.. Main.Game
+Main.Canvas <|-- Main.Game
+Entities.Projectiles.GameObject <|-- Entities.Projectiles.Projectile
+Entities.Zombies.Zombie <|-- Entities.Zombies.NormalZombie
+Entities.Zombies.Zombie <|-- Entities.Zombies.BabyZombie
+Entities.Zombies.Zombie <|-- Entities.Zombies.Boss
+Exceptions.Exception <|-- Exceptions.InvalidAudioException
+java.awt.event.MouseAdapter <|-- Inputs.MouseInput
+java.awt.event.KeyAdapter <|-- Inputs.KeyInput
+Entities.Projectiles.Projectile <|-- Entities.Projectiles.FireBall
+@enduml
